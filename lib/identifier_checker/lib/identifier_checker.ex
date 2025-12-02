@@ -13,6 +13,7 @@ defmodule IdentifierChecker do
         ill = check_ids(ids)
         sum = ill |> List.flatten() |> Enum.sum()
         send(from, {:invalid_sum, sum})
+        loop()
     end
   end
 
@@ -26,22 +27,39 @@ defmodule IdentifierChecker do
   end
 
   defp check_interval(n1, n2) do
-    IO.puts("Checking #{n1} - #{n2}")
     Enum.filter(n1..n2, fn n -> repeated?(n) end)
   end
 
-  defp repeated?(num) do
-    {l_part, r_part} = num |> to_string() |> split_string_in_half()
-    if l_part == r_part do
-      true
-    else
-      false
+  def repeated?(num) do
+    str = num |> to_string()
+    repeated?(str, "", "", String.length(str))
+  end
+  defp repeated?("", patron, actual, length) do
+    case length == String.length(patron) do
+      true -> false
+      false ->
+        if(length == String.length(patron) + String.length(actual), do: true, else: IO.puts("Error calculating repeating secuences"))
     end
   end
-
-  defp split_string_in_half(str) do
-    len = String.length(str)
-    spl = div(len, 2)
-    {l_part, r_part} = str |> String.split_at(spl)
+  defp repeated?(str, "", actual, length) do
+    {patr, rest} = String.split_at(str, 1)
+    repeated?(rest, patr, actual, length)
+  end
+  defp repeated?(str, patron, actual, length) do
+    p_len = String.length(patron)
+    {ac, rest} = String.split_at(str, p_len)
+    # TODO: Optimize code
+    case patron == ac do
+      true -> repeated?(rest, patron, actual <> ac, length)
+      false ->
+        case actual != "" do
+          true ->
+            {fst, rs} = String.split_at(actual, 1)
+            repeated?(rs <> ac <> rest, patron <> fst, "", length)
+          false ->
+            {fst, rs} = String.split_at(ac, 1)
+            repeated?(rs <> rest, patron <> fst, "", length)
+        end
+    end
   end
 end
