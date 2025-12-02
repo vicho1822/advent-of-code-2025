@@ -12,12 +12,12 @@ defmodule Dial do
     receive do
       {:L, n, _from} ->
         new_mark = underflows(mark, n)
-        IO.puts("L #{n} #{new_mark}")
-        loop(new_mark, if(new_mark == 0, do: counter + 1, else: counter))
+        loop(new_mark, counter + l_clicked_zero(mark, n))
+
       {:R, n, _from} ->
         new_mark = overflows(mark, n)
-        IO.puts("R #{n} #{new_mark}")
-        loop(new_mark, if(new_mark == 0, do: counter + 1, else: counter))
+        loop(new_mark, counter + r_clicked_zero(mark, n))
+
       {:EOF, from} ->
         send(from, {:counter, counter})
         loop(50, 0)
@@ -25,31 +25,33 @@ defmodule Dial do
   end
 
   defp overflows(mark, num) do
-    h = get_hundreds(num, 0)
-    dec = num - h * 100
-    aux = mark + dec
-    cond do
-      aux > 99 -> aux - 100
-      true -> aux
-    end
+    (mark + num) |> rem(100)
   end
 
   defp underflows(mark, num) do
-    h = get_hundreds(num, 0)
-    dec = num - h * 100
-    aux = mark - dec
-    cond do
-      aux < 0 -> aux + 100
-      true -> aux
-    end
+    (mark - (num |> rem(100)) + 100) |> rem(100)
   end
 
-  defp get_hundreds(num, h) do
-    aux = num - 100
-    cond do
-      aux > 0 -> get_hundreds(aux, h+1)
-      aux == 0 -> h + 1
-      aux < 0 -> h
+  defp l_clicked_zero(mark, num) do
+    hundreds = trunc(num / 100)
+    aux = rem(num, 100)
+
+    extra_click = cond do
+      aux == 0 -> 0
+      mark == 0 and aux <= 99 -> 0
+      aux >= mark -> 1
+      true -> 0
+    end
+
+    hundreds + extra_click
+  end
+
+  defp r_clicked_zero(mark, num) do
+    hundreds = trunc(num / 100)
+    aux = rem(num, 100)
+    case (mark + aux) >= 100 do
+      true -> hundreds + 1
+      false -> hundreds
     end
   end
 end
