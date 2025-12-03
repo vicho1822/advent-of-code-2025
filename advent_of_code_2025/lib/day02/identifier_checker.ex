@@ -16,12 +16,12 @@ defmodule IdentifierChecker do
 
   defp loop() do
     receive do
+      {:stop, from} -> send(from, :stopped)
       {ids, from} ->
         ill = check_ids(ids)
         sum = ill |> List.flatten() |> Enum.sum()
         send(from, {:invalid_sum, sum})
         loop()
-      {:stop, from} -> send(from, :stopped)
     end
   end
 
