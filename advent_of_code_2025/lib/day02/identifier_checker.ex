@@ -3,8 +3,15 @@ defmodule IdentifierChecker do
 
   """
 
-  def init() do
+  def init_() do
     spawn(fn -> loop() end)
+  end
+
+  def stop_(pid) do
+    send(pid, {:stop, self()})
+    receive do
+      :stopped -> :ok
+    end
   end
 
   defp loop() do
@@ -14,6 +21,7 @@ defmodule IdentifierChecker do
         sum = ill |> List.flatten() |> Enum.sum()
         send(from, {:invalid_sum, sum})
         loop()
+      {:stop, from} -> send(from, :stopped)
     end
   end
 
