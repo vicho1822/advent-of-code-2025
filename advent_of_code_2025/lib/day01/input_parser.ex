@@ -1,4 +1,4 @@
-defmodule Input_parser do
+defmodule Day01.Input_parser do
   @moduledoc"""
 
   """

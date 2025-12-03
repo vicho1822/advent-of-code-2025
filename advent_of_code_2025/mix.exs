@@ -1,9 +1,9 @@
-defmodule IdentifierChecker.MixProject do
+defmodule AdventOfCode2025.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :identifier_checker,
+      app: :advent_of_code_2025,
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,

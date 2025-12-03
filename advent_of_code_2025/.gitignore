@@ -17,7 +17,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-dial_lock-*.tar
+advent_of_code_2025-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
