@@ -15,7 +15,28 @@ defmodule Paper_access do
   ]
 
   def get_accessible(input) do
-    mtx = parse_input(input)
+    parse_input(input)
+    |> aux_loop()
+  end
+
+  defp parse_input(input) do
+    File.read!(input)
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.graphemes/1)
+  end
+
+  defp aux_loop(mtx) do
+    new_mtx = mark_accessible(mtx)
+
+    case mtx == new_mtx do
+      true ->
+        Enum.map(new_mtx, fn row -> Enum.count(row, fn element -> element == "x" end) end)
+        |> Enum.sum()
+      false -> aux_loop(new_mtx)
+    end
+  end
+
+  defp mark_accessible(mtx) do
     Enum.with_index(mtx)
     |> Enum.map(fn {row, posy} ->
       Enum.with_index(row)
@@ -26,14 +47,6 @@ defmodule Paper_access do
         end
       end)
     end)
-    |> Enum.map(fn row -> Enum.count(row, fn element -> element == "x" end) end)
-    |> Enum.sum()
-  end
-
-  defp parse_input(input) do
-    File.read!(input)
-    |> String.split("\n", trim: true)
-    |> Enum.map(&String.graphemes/1)
   end
 
   defp accessible?(mtx, pos) do
