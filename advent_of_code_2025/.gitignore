@@ -21,3 +21,7 @@ advent_of_code_2025-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Ignore original inputs for the website
+*/examples
+*/inputs
